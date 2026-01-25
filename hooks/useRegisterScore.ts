@@ -14,7 +14,7 @@ export interface ScoreData {
   }>;
 }
 
-export const useAnalyzeScoreCard = () => {
+export const useRegisterScore = () => {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,8 +34,8 @@ export const useAnalyzeScoreCard = () => {
     setOcrResult(newData);
   };
 
-  // 解析実行
-  const executeAnalysis = async () => {
+  // OCR実行
+  const executeOcr = async () => {
     if (!file) return;
     setLoading(true);
 
@@ -67,8 +67,8 @@ export const useAnalyzeScoreCard = () => {
       setOcrResult(data);
 
     } catch (error) {
-      console.error("Analysis Error:", error);
-      alert("解析に失敗しました。");
+      console.error("OCR Error:", error);
+      alert("OCRに失敗しました。");
     } finally {
       setLoading(false);
     }
@@ -111,7 +111,7 @@ export const useAnalyzeScoreCard = () => {
     loading,
     ocrResult,
     handleFileSelect,
-    executeAnalysis,
+    executeOcr,
     updateScoreData, // 追加: 修正用
     saveScore,       // 追加: 保存用
   };

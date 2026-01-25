@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useLiff } from "@/app/context/LiffContext";
-import AnalyzeScoreCard from "@/components/AnalyzeScoreCard";
+import RegisterScore from "@/components/RegisterScore";
 
 export default function Home() {
   const { isLoggedIn, login } = useLiff();
@@ -36,7 +36,7 @@ export default function Home() {
   // ログイン済み：解析機能コンポーネントを表示
   return (
     <div className="min-h-screen flex flex-col items-center bg-stone-50 text-stone-800 font-sans">
-      <AnalyzeScoreCard />
+      <RegisterScore />
     </div>
   );
 }

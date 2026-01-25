@@ -2,22 +2,22 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import { useAnalyzeScoreCard } from "@/hooks/useAnalyzeScoreCard";
+import { useRegisterScore } from "@/hooks/useRegisterScore";
 // 拡大縮小ライブラリのインポート
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 
-export default function AnalyzeScoreCard() {
+export default function RegisterScore() {
   const { 
     file, 
     previewUrl, 
     loading, 
     ocrResult, 
     handleFileSelect, 
-    executeAnalysis,
+    executeOcr,
     updateScoreData,
     saveScore 
-  } = useAnalyzeScoreCard();
+  } = useRegisterScore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const courseTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -235,7 +235,7 @@ const handleHoleChange = (index: number, field: "score" | "putts", value: string
       <div className="text-center space-y-3">
         <h1 className="text-2xl font-serif text-emerald-950 tracking-widest">SCORE CARD</h1>
         <div className="h-0.5 w-12 bg-emerald-800 mx-auto opacity-80"></div>
-        <p className="text-xs text-stone-500 font-medium tracking-wider uppercase">Upload & Analyze</p>
+        <p className="text-xs text-stone-500 font-medium tracking-wider uppercase">Upload & Register</p>
       </div>
 
       <div className="w-full space-y-6">
@@ -264,14 +264,14 @@ const handleHoleChange = (index: number, field: "score" | "putts", value: string
         </div>
 
         <button
-          onClick={executeAnalysis}
+          onClick={executeOcr}
           disabled={!file || loading}
           className={`
             w-full py-4 rounded-sm text-sm font-semibold tracking-widest uppercase shadow-sm transition-all duration-300
             ${!file || loading ? "bg-stone-200 text-stone-400 cursor-not-allowed" : "bg-emerald-900 text-white hover:bg-emerald-800 hover:shadow-md"}
           `}
         >
-          {loading ? "Analyzing..." : "Analyze Score"}
+          {loading ? "Loading..." : "Load Score"}
         </button>
       </div>
     </div>

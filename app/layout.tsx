@@ -8,8 +8,8 @@ import { LiffProvider } from "./context/LiffContext"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Golf AI Partner",
-  description: "AI Golf Score Analysis",
+  title: "スコア LOGIC engine",
+  description: "スコアカードから、あなたのゴルフスキルを紐解く。",
 }
 
 export default function RootLayout({
