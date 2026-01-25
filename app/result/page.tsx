@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle2, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"

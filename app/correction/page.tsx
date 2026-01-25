@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import React from "react"
 import { CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input"
 import { useGolf } from "../context/GolfContext"
 
 export default function CorrectionPage() {
-  const router = useRouter()
   const { holes, setHoles, imagePreview } = useGolf()
 
   const handleScoreChange = (holeIndex: number, newScore: number) => {

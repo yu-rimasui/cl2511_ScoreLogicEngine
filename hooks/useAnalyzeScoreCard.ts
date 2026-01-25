@@ -1,0 +1,118 @@
+import { useState } from "react";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+
+// データ型定義
+export interface ScoreData {
+  course_name?: string;
+  date?: string;
+  total_score?: number;
+  holes?: Array<{
+    number: number;
+    score: number;
+    putts?: number;
+  }>;
+}
+
+export const useAnalyzeScoreCard = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [ocrResult, setOcrResult] = useState<ScoreData | null>(null);
+
+  // 画像選択
+  const handleFileSelect = (selectedFile: File | undefined) => {
+    if (selectedFile) {
+      setFile(selectedFile);
+      setPreviewUrl(URL.createObjectURL(selectedFile));
+      setOcrResult(null);
+    }
+  };
+
+  // データの修正（ユーザーが入力フォームで値を書き換えた時に呼ぶ）
+  const updateScoreData = (newData: ScoreData | null) => {
+    setOcrResult(newData);
+  };
+
+  // 解析実行
+  const executeAnalysis = async () => {
+    if (!file) return;
+    setLoading(true);
+
+    try {
+      // 1. Base64変換 (Geminiに送るために必須)
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(",")[1]);
+        };
+        reader.onerror = reject;
+      });
+
+      // 2. APIへ送信
+      const response = await fetch("/api/ocr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64: base64,
+          mimeType: file.type,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Server Error");
+
+      const data: ScoreData = await response.json();
+      setOcrResult(data);
+
+    } catch (error) {
+      console.error("Analysis Error:", error);
+      alert("解析に失敗しました。");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Firestoreへ保存
+  const saveScore = async () => {
+    if (!ocrResult || !auth.currentUser) {
+      alert("ログインしていないか、データがありません");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const uid = auth.currentUser.uid;
+      // ユーザーごとのサブコレクション 'scores' に保存
+      // パス: users/{uid}/scores/{docId}
+      await addDoc(collection(db, "users", uid, "scores"), {
+        ...ocrResult,
+        createdAt: serverTimestamp(),
+      });
+      
+      alert("スコアを保存しました！");
+      // 保存後の処理（リセットなど）
+      setFile(null);
+      setPreviewUrl(null);
+      setOcrResult(null);
+
+    } catch (error) {
+      console.error("Save Error:", error);
+      alert("保存に失敗しました");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    file,
+    previewUrl,
+    loading,
+    ocrResult,
+    handleFileSelect,
+    executeAnalysis,
+    updateScoreData, // 追加: 修正用
+    saveScore,       // 追加: 保存用
+  };
+};
